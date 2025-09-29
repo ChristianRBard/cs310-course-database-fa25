@@ -27,7 +27,17 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
+                String query = "INSERT INTO registration (studentid, termid, crn) VALUES (?, ?, ?)";
+            
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+                ps.setInt(3, crn);
+
+                int rows = ps.executeUpdate();
+
+                // If at least one row was inserted, success
+                result = (rows > 0);
                 
             }
             
@@ -58,7 +68,17 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
+                String query = "DELETE FROM registration WHERE studentid = ? AND termid = ? AND crn = ?";
+            
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+                ps.setInt(3, crn);
+
+                int rows = ps.executeUpdate();
+
+                // true if at least one row was deleted
+                result = (rows > 0);
                 
             }
             
@@ -88,7 +108,16 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
+                String query = "DELETE FROM registration WHERE studentid = ? AND termid = ?";
+            
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+
+                int rows = ps.executeUpdate();
+
+                // success if at least one row was deleted
+                result = (rows > 0);
                 
             }
             
@@ -107,36 +136,38 @@ public class RegistrationDAO {
     }
 
     public String list(int studentid, int termid) {
-        
-        String result = null;
-        
+    
+        String result = "[]";
+
         PreparedStatement ps = null;
         ResultSet rs = null;
-        ResultSetMetaData rsmd = null;
-        
+
         try {
-            
             Connection conn = daoFactory.getConnection();
-            
+
             if (conn.isValid(0)) {
-                
-                // INSERT YOUR CODE HERE
-                
+                String query = "SELECT studentid, termid, crn " +
+                               "FROM registration " +
+                               "WHERE studentid = ? AND termid = ? " +
+                               "ORDER BY crn";
+
+                ps = conn.prepareStatement(query);
+                ps.setInt(1, studentid);
+                ps.setInt(2, termid);
+
+                rs = ps.executeQuery();
+
+                result = DAOUtility.getResultSetAsJson(rs);
             }
-            
         }
-        
-        catch (Exception e) { e.printStackTrace(); }
-        
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         finally {
-            
             if (rs != null) { try { rs.close(); } catch (Exception e) { e.printStackTrace(); } }
             if (ps != null) { try { ps.close(); } catch (Exception e) { e.printStackTrace(); } }
-            
         }
-        
+
         return result;
-        
     }
-    
 }
